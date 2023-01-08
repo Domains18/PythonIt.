@@ -105,3 +105,24 @@ def print_arp_res(arp_res):
     while True:
         try: 
             choice = int(input("Please select the Ip Address to poison: "))
+            if choice < len(arp_res):
+                return arp_res[choice]
+        except:
+            print(" Invalid Choice")
+
+def get_cmd_arguments():
+    ip_range = None
+    if len(sys.argv) - 1 > 0 and sys.argv[1] != "-Ip_range":
+        print("-ip_range flag not specified")
+        return ip_range
+    elif len(sys.argv) -1 > 0 and sys.argv[1] == "-Ip_range":
+        try:
+            print(f"{IPv4Network(sys.argv[2])}")
+            ip_range = sys.argv[2]
+            print(" Valid ip range entered through command line")
+        except:
+            print(" Invalid ip range entered through command line")
+    return ip_range
+
+
+in_sudo_mode()
