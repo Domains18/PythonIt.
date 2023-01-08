@@ -10,32 +10,37 @@ import threading
 # import current directory
 cwd = os.getcwd()
 
+
 def in_sudo_mode():
     # if not in sudo mode, exit
     if not 'SUDO_UID' in os.environ.keys():
         print("Please run this script in sudo mode")
         exit()
-        
+
+
 def arp_scan(ip_range):
     arp_responses = list()
-    
+
     answered_list = scapy.arping(ip_range, verbose=0)[0]
     for res in answered_list:
         arp_responses.append({'ip': res[1].prsc, 'mac': res[1].hwsrc})
         return arp_responses
-    
-    
+
+
 def is_gateway(gateway_ip):
-    result = subprocess.run(["route", "-n"], capture_output=True).stdout.decode().split("\n")
+    result = subprocess.run(
+        ["route", "-n"], capture_output=True).stdout.decode().split("\n")
     for row in result:
         if gateway_ip in row:
             return True
     return False
 
+
 def get_interface_names():
     os.chdir("/sys/class/net")
     interface_names = os.listdir()
     return interface_names
+
 
 def match_interface_name(row):
     interface_names = get_interface_names()
@@ -43,6 +48,17 @@ def match_interface_name(row):
         if iface in row:
             return True
 
+
 def gateway_info(network_info):
-    
-    
+    result = subprocess.run(
+        ["route", "-n"], capture_output=True).stdout.decode().split("\n")
+    gateways = []
+    for iface in network_info:
+        for row in result:
+            if iface["ip"] in row:
+                iface_name = match_interface_name(row)
+                gateways.append(
+                    {"iface": iface_name, "ip": iface["ip"], "mac": iface["mac"]})
+    return gateways
+
+
