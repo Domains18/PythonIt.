@@ -88,6 +88,20 @@ def packet_sniffer(interface):
     
 def process_sniffed_packet(packet):
     print("Writing packet to file. Press Ctrl+C to stop")
+    scapy.wrpcap("packets.pcap", packet, append=True)
     
-
-    
+def print_arp_res(arp_res):
+    print("IP\t\t\tMAC Address\n-----------------------------------------")
+    print("\n****************************************************************")
+    print("\n* For Educational Purposes                                     *")
+    print("\n* https://github.com/Domains18                                  *")
+    print("\n* To Whom Much has been given                                  *")
+    print("\n* Much Has Been Given                                 *")
+    print("\n****************************************************************")
+    print("ID\t\tIP\t\t\tMAC Address")
+    print("_________________________________________________________")
+    for id, res in enumerate(arp_res):
+        print(f"{id}\t\t{res['ip']}\t\t{res['mac']}")
+    while True:
+        try: 
+            choice = int(input("Please select the Ip Address to poison: "))
