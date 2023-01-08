@@ -61,4 +61,11 @@ def gateway_info(network_info):
                     {"iface": iface_name, "ip": iface["ip"], "mac": iface["mac"]})
     return gateways
 
+def clients( arp_res, gateway_res):
+    client_list = []
+    for gateway in gateway_res:
+        for item in arp_res:
+            if item["ip"] != gateway["ip"]:
+                client_list.append(item)
+    return client_list
 
