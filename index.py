@@ -126,3 +126,23 @@ def get_cmd_arguments():
 
 
 in_sudo_mode()
+
+ip_range = get_cmd_arguments()
+
+if ip_range == None:
+    ip_range = input("Please enter the ip range to scan: ")
+    exit()
+
+allow_ip_forwarding()
+
+arp_res = arp_scan(ip_range)
+
+if len(arp_res) == 0:
+    print("No devices found in the network")
+    exit()
+
+gateways = gateway_info(arp_res)
+
+gateway_info = gateways[0]
+
+client_info = clients(arp_res, gateways)
